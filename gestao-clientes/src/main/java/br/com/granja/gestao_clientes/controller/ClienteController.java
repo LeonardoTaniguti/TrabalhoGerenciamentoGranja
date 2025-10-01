@@ -20,7 +20,7 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    // Listagem de Registros e Pesquisa
+    // --- LISTAGEM E PESQUISA ---
     @GetMapping
     public String listarClientes(@RequestParam(name = "q", required = false) String query, Model model) {
         List<Cliente> clientes;
@@ -34,7 +34,7 @@ public class ClienteController {
         return "clientes/index";
     }
 
-    // Formulário de Cadastro
+    // --- CADASTRO (EXIBIR FORMULÁRIO) ---
     @GetMapping("/novo")
     public String novoClienteForm(Model model) {
         model.addAttribute("cliente", new Cliente());
@@ -42,26 +42,7 @@ public class ClienteController {
         return "clientes/formulario";
     }
 
-    // Salvar (Inserir ou Atualizar)
-    @PostMapping("/salvar")
-    public String salvarCliente(@Valid @ModelAttribute("cliente") Cliente cliente, BindingResult result, RedirectAttributes attributes, Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("pageTitle", cliente.getId() == null ? "Novo Cliente" : "Editar Cliente");
-            return "clientes/formulario";
-        }
-
-        try {
-            clienteService.salvar(cliente);
-            attributes.addFlashAttribute("sucesso", "Cliente salvo com sucesso!");
-        } catch (Exception e) {
-            // Tratamento genérico para erros, como documento duplicado
-            attributes.addFlashAttribute("erro", "Erro ao salvar cliente. Verifique se o CNPJ/CPF já está em uso.");
-        }
-
-        return "redirect:/clientes";
-    }
-
-    // Formulário de Edição
+    // --- EDIÇÃO (EXIBIR FORMULÁRIO) ---
     @GetMapping("/editar/{id}")
     public String editarClienteForm(@PathVariable Long id, Model model, RedirectAttributes attributes) {
         Optional<Cliente> clienteOpt = clienteService.buscarPorId(id);
@@ -75,9 +56,40 @@ public class ClienteController {
         }
     }
 
-    // Exclusão
-    @GetMapping("/excluir/{id}")
-    public String excluirCliente(@PathVariable Long id, RedirectAttributes attributes) {
+    // --- SALVAR (CRIAÇÃO OU ATUALIZAÇÃO) ---
+    @PostMapping("/salvar")
+    public String salvarCliente(@Valid @ModelAttribute("cliente") Cliente cliente, BindingResult result, RedirectAttributes attributes, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("pageTitle", cliente.getId() == null ? "Novo Cliente" : "Editar Cliente");
+            return "clientes/formulario";
+        }
+
+        try {
+            clienteService.salvar(cliente);
+            attributes.addFlashAttribute("sucesso", "Cliente salvo com sucesso!");
+        } catch (Exception e) {
+            attributes.addFlashAttribute("erro", "Erro ao salvar cliente. Verifique se o CNPJ/CPF já está em uso.");
+        }
+
+        return "redirect:/clientes";
+    }
+
+    // --- EXCLUSÃO (PASSO 1: MOSTRAR PÁGINA DE CONFIRMAÇÃO) ---
+    @GetMapping("/excluir/confirmar/{id}")
+    public String confirmarExclusao(@PathVariable Long id, Model model, RedirectAttributes attributes) {
+        Optional<Cliente> clienteOpt = clienteService.buscarPorId(id);
+        if (clienteOpt.isEmpty()) {
+            attributes.addFlashAttribute("erro", "Cliente não encontrado.");
+            return "redirect:/clientes";
+        }
+        model.addAttribute("cliente", clienteOpt.get());
+        model.addAttribute("pageTitle", "Confirmar Exclusão");
+        return "clientes/confirmar-exclusao";
+    }
+
+    // --- EXCLUSÃO (PASSO 2: EXECUTAR A EXCLUSÃO) ---
+    @PostMapping("/excluir/{id}")
+    public String executarExclusao(@PathVariable Long id, RedirectAttributes attributes) {
         try {
             clienteService.excluir(id);
             attributes.addFlashAttribute("sucesso", "Cliente excluído com sucesso.");
