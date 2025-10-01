@@ -1,8 +1,10 @@
 package br.com.granja.gestao_clientes.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDate;
 
 @Entity
@@ -16,19 +18,23 @@ public class Cliente {
     // --- Campos Obrigatórios ---
     @NotBlank(message = "O nome é obrigatório.")
     @Size(min = 3, max = 100, message = "O nome deve ter entre 3 e 100 caracteres.")
+    @Pattern(regexp = "[a-zA-ZÀ-ú\\s]+", message = "O nome deve conter apenas letras e espaços.")
     @Column(nullable = false, length = 100)
     private String nome;
 
     @NotBlank(message = "O CNPJ/CPF é obrigatório.")
+    @Pattern(regexp = "[0-9]+", message = "O documento deve conter apenas números.")
     @Column(nullable = false, unique = true, length = 18)
-    private String documento; // Pode ser CNPJ ou CPF
+    private String documento;
 
     @NotBlank(message = "O telefone é obrigatório.")
+    @Pattern(regexp = "[0-9]+", message = "O telefone deve conter apenas números.") // Mensagem corrigida
     @Column(nullable = false, length = 20)
     private String telefone;
 
     // --- Campos Opcionais ---
     @Column(length = 100)
+    @Email(message = "Por favor, insira um e-mail válido.") // <-- VALIDAÇÃO CORRETA PARA E-MAIL
     private String email;
 
     @Column(length = 255)
