@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<head>
+    <title>Confirmar Exclusão - Granja RS</title>
+</head>
+<body>
+<section>
+    <div class="card border-danger shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Atenção: Ação Irreversível</h4>
+        </div>
+        <div class="card-body">
+            <p class="fs-5">Você tem certeza que deseja excluir permanentemente o cliente abaixo?</p>
+
+            <div class="alert alert-secondary">
+                <h5>Detalhes do Cliente:</h5>
+                <ul class="list-unstyled mb-0">
+                    <li><strong>ID:</strong> <span th:text="${cliente.id}"></span></li>
+                    <li><strong>Nome:</strong> <span th:text="${cliente.nome}"></span></li>
+                    <li><strong>Documento:</strong> <span th:text="${cliente.documento}"></span></li>
+                </ul>
+            </div>
+
+            <hr>
+
+            <form th:action="@{/clientes/excluir/{id}(id=${cliente.id})}" method="post">
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash3-fill"></i> Sim, Confirmar Exclusão
+                </button>
+                <a th:href="@{/clientes}" class="btn btn-secondary">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</section>
+</body>
+</html>
