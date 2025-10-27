@@ -1,39 +1,46 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org"
-      th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Confirmar Exclusão - Granja RS</title>
+    <meta charset="UTF-8">
+    <title th:text="${pageTitle}">Confirmar Exclusão</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
-<section>
-    <div class="card border-danger shadow-sm">
-        <div class="card-header bg-danger text-white">
-            <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i>Atenção: Ação Irreversível</h4>
-        </div>
-        <div class="card-body">
-            <p class="fs-5">Você tem certeza que deseja excluir permanentemente o cliente abaixo?</p>
 
-            <div class="alert alert-secondary">
-                <h5>Detalhes do Cliente:</h5>
-                <ul class="list-unstyled mb-0">
-                    <li><strong>ID:</strong> <span th:text="${cliente.id}"></span></li>
-                    <li><strong>Nome:</strong> <span th:text="${cliente.nome}"></span></li>
-                    <li><strong>Documento:</strong> <span th:text="${cliente.documento}"></span></li>
-                </ul>
-            </div>
-
-            <hr>
-
-            <form th:action="@{/clientes/excluir/{id}(id=${cliente.id})}" method="post">
-                <button type="submit" class="btn btn-danger">
-                    <i class="bi bi-trash3-fill"></i> Sim, Confirmar Exclusão
-                </button>
-                <a th:href="@{/clientes}" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Cancelar
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded shadow-sm">
+            <h2 class="mb-0" th:text="${pageTitle}">Confirmar Exclusão</h2>
+            <div>
+                <span class="me-3">Olá, <strong th:text="${usuarioLogado}">Usuário</strong>!</span>
+                <a th:href="@{/logout}" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-box-arrow-right"></i> Sair
                 </a>
-            </form>
+            </div>
         </div>
     </div>
-</section>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <p>Você tem certeza que deseja excluir o cliente abaixo?</p>
+                        <h4 th:text="${cliente.nome}">Nome do Cliente</h4>
+                        <p class="text-muted" th:text="${cliente.cpfCnpj}">CPF/CNPJ</p>
+                        
+                        <p class="text-danger fw-bold">Esta ação não pode ser desfeita.</p>
+
+                        <form th:action="@{/clientes/excluir/{id}(id=${cliente.id})}" method="post">
+                            <div class="text-end">
+                                <a th:href="@{/clientes}" class="btn btn-secondary me-2">Cancelar</a>
+                                <button type="submit" class="btn btn-danger">Excluir Permanentemente</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
